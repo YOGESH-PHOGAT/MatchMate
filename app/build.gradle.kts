@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlinx.serialisation)
+    alias(libs.plugins.ksp.tools)
 }
 
 android {
@@ -57,5 +59,19 @@ dependencies {
 
     // Kotlin Coroutines for asynchronous work
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.activity.ktx)
 
+    // kotlin x serialisation
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    // room database
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+
+    // optional - Paging 3 Integration
+    implementation(libs.androidx.room.paging)
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
 }
