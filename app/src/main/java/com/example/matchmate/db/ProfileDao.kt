@@ -1,9 +1,10 @@
-package com.example.matchmate.data
+package com.example.matchmate.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.matchmate.data.UserProfile
 
 @Dao
 interface ProfileDao {
@@ -17,10 +18,6 @@ interface ProfileDao {
     @Query("DELETE FROM user_profiles")
     suspend fun deleteAll()
 
-    @Query("SELECT uid FROM seen_profiles")
-    suspend fun getAllSeenUids(): List<String>
-
-    @Query("UPDATE user_profiles SET interactionStatus = :status WHERE uid = :uid")
-    suspend fun updateInteractionStatus(uid: String, status: InteractionStatus)
-
+    @Query("SELECT uid FROM user_profiles")
+    suspend fun getAllUids(): List<String>
 }

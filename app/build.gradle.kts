@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.matchmate"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -34,6 +34,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -74,4 +78,6 @@ dependencies {
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation(libs.androidx.room.ktx)
+    // In your dependencies block
+    implementation(libs.glide)
 }
