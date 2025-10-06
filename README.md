@@ -1,4 +1,5 @@
 MATCHMATE ANDROID APP
+(debug apk uploaded: https://github.com/YOGESH-PHOGAT/MatchMate/blob/master/app-debug.apk )
 
 MatchMate is a simple Android application that showcases a list of potential user profiles.
 Users can browse these profiles and mark them as either 'Accepted' or 'Declined'.
