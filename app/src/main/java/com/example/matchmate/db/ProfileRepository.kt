@@ -33,7 +33,8 @@ class ProfileRepository(
         Log.d("ProfileRepository", "Attempting to fetch next batch of $batchSize profiles.")
         try {
             // 1. Get a list of all profile IDs currently in our database for efficient filtering.
-            val existingUids = profileDao.getAllUids().toSet()
+            val existingUids = profileDao.getAllUids().toSet().plus(historyProfileDao.getAllUids())
+
             Log.d("ProfileRepository", "Found ${existingUids.size} existing profiles in database.")
 
             // 2. Make the network call to get a new batch of profiles.

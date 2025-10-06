@@ -32,4 +32,8 @@ interface HistoryProfileDao {
     @Query("SELECT * FROM history_profiles")
     suspend fun getAllProfiles(): List<HistoryProfile>
 
+
+    @Query("SELECT uid FROM history_profiles")
+    suspend fun getAllUids(): List<String>
+
 }
