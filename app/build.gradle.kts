@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlinx.serialisation)
+    alias(libs.plugins.ksp.tools)
 }
 
 android {
@@ -9,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.matchmate"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -32,6 +34,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
     }
 }
 
@@ -57,5 +64,23 @@ dependencies {
 
     // Kotlin Coroutines for asynchronous work
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.activity.ktx)
+
+    // kotlin x serialisation
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    // room database
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+
+    // optional - Paging 3 Integration
+    implementation(libs.androidx.room.paging)
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
+    // In your dependencies block
+    implementation(libs.glide)
+    implementation(libs.androidx.fragment.ktx) // Use the latest stable version
 
 }
