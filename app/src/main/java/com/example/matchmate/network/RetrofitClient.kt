@@ -9,8 +9,8 @@ import okhttp3.MediaType.Companion.toMediaType
 object RetrofitClient {
 
     private val json = Json {
-        ignoreUnknownKeys = true // This is the default, but good to be explicit
-        coerceInputValues = true // If a value is malformed, use a default (e.g., null for nullable)
+        ignoreUnknownKeys = true
+        coerceInputValues = true
     }
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
