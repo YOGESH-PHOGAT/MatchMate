@@ -4,4 +4,6 @@
     <string name="accept">accept</string>
     <string name="reject">reject</string>
     <string name="history">History</string>
+    <string name="nothing_here">Nothing here!</string>
+    <string name="loading">Loading...</string>
 </resources>

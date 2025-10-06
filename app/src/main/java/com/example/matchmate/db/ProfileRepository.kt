@@ -38,6 +38,7 @@ class ProfileRepository(
 
             // 2. Make the network call to get a new batch of profiles.
             val response = apiService.getProfiles(results = batchSize)
+            Log.d("ProfileRepository","API Call Received ${response.body()} ")
 
             if (response.isSuccessful) {
                 val profilesFromApi = response.body()?.results ?: emptyList()
@@ -74,12 +75,18 @@ class ProfileRepository(
      *
      * @return A list of all UserProfile entities from the database.
      */
-    suspend fun getAllCachedProfiles(): List<UserProfile> {
+    suspend fun getAllCachedProfiles(): List<CardProfile> {
         Log.d("ProfileRepository", "Retrieving all profiles from local cache.")
-        return profileDao.getAllProfiles()
+        val res = profileDao.getAllProfiles()
+        if (res.isEmpty()) {
+            fetchAndCacheNextBatch()
+            return profileDao.getAllProfiles()
+        } else {
+            return res
+        }
     }
 
-    suspend fun getHistoryProfiles(): List<UserProfile> {
+    suspend fun getHistoryProfiles(): List<HistoryProfile> {
         Log.d("ProfileRepository", "Retrieving all history profiles from local cache.")
         return historyProfileDao.getAllProfiles()
     }

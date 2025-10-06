@@ -6,17 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.matchmate.db.CardProfile
+import com.example.matchmate.db.HistoryProfile
 import com.example.matchmate.db.ProfileRepository
 import com.example.matchmate.db.UserProfile
 import kotlinx.coroutines.launch
 
 class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
 
-    private val _profiles = MutableLiveData<List<UserProfile>>()
-    val profiles: LiveData<List<UserProfile>> = _profiles
+    private val _profiles = MutableLiveData<List<CardProfile>>()
+    val profiles: LiveData<List<CardProfile>> = _profiles
 
-    private val _historyProfiles = MutableLiveData<List<UserProfile>>()
-    val historyProfiles: LiveData<List<UserProfile>> = _historyProfiles
+    private val _historyProfiles = MutableLiveData<List<HistoryProfile>>()
+    val historyProfiles: LiveData<List<HistoryProfile>> = _historyProfiles
 
 
     private val _error = MutableLiveData<String>()
@@ -26,39 +27,35 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _isPagination = MutableLiveData<Boolean>()
+
+    val isPagination: LiveData<Boolean> = _isPagination
+
+
     private var isFetching = false
 
-    init {
-        loadMoreProfiles()
-    }
 
     /**
      * This is the main function to call for pagination.
      * It fetches the next batch of users from the network, adds them to the database,
      * and then reloads the complete list from the database to update the UI.
-     * It's safe to call this multiple times (e.g., on scroll).
      */
     fun loadMoreProfiles() {
-        // 3. Prevent new fetches if one is already in progress
         if (isFetching) return
 
         viewModelScope.launch {
             isFetching = true
-            _isLoading.value = true
+            _isPagination.value = true
             try {
-                // 4. Call the repository to fetch the next batch and save it
                 repository.fetchAndCacheNextBatch()
-
-                // 5. After fetching, get the updated, complete list from the database
                 val updatedProfileList = repository.getAllCachedProfiles()
                 _profiles.value = updatedProfileList
 
             } catch (e: Exception) {
                 _error.value = "Failed to fetch profiles: ${e.message}"
             } finally {
-                // 6. Reset flags after the operation is complete
                 isFetching = false
-                _isLoading.value = false
+                _isPagination.value = false
             }
         }
     }
@@ -113,12 +110,15 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
 
     fun fetchUsers() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val profileList = repository.getAllCachedProfiles()
                 _profiles.value = profileList
             } catch (e: Exception) {
                 // The repository logs errors, but we can still post a generic one to the UI
                 _error.value = "Failed to fetch profiles: ${e.message}"
+            } finally {
+                _isLoading.value = false
             }
         }
     }

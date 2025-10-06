@@ -44,6 +44,9 @@ class ProfileListFragment: Fragment(), ItemClickListener {
     }
 
     private var isHistory = false
+    private var adapterItemList: ArrayList<AdapterItem> = arrayListOf()
+
+
 
     private val userViewModel: UserViewModel by viewModels {
         val database = AppDatabase.getDatabase(requireContext())
@@ -113,7 +116,6 @@ class ProfileListFragment: Fragment(), ItemClickListener {
                     } else {
                         userViewModel.loadMoreProfiles()
                     }
-
                 }
             }
         })
@@ -123,21 +125,33 @@ class ProfileListFragment: Fragment(), ItemClickListener {
         if (isHistory) {
             userViewModel.historyProfiles.observe(viewLifecycleOwner) { profiles ->
                 if (profiles.isNotEmpty()) {
-                    val adapterItemList = profiles.map { AdapterItem.ProfileItem(it) }
+                    binding.tvNothingHere.visibility = View.GONE
+                    adapterItemList = arrayListOf<AdapterItem>()
+                    profiles.forEach {
+                        adapterItemList.add(AdapterItem.ProfileItem(it))
+                    }
+                    adapterItemList.add(AdapterItem.LoadingItem)
                     profileAdapter.submitList(adapterItemList)
                     Log.d("MainActivity", "API Call Success: Received ${profiles.size} history profiles.")
                 } else {
+                    binding.tvNothingHere.visibility = View.VISIBLE
                     Log.d("MainActivity", "API Call Success: Received an empty list of history profiles.")
                 }
             }
         } else {
             userViewModel.profiles.observe(viewLifecycleOwner) { profiles ->
                 if (profiles.isNotEmpty()) {
-                    val adapterItemList = profiles.map { AdapterItem.ProfileItem(it) }
+                    binding.tvNothingHere.visibility = View.GONE
+                    adapterItemList = arrayListOf()
+                    profiles.forEach {
+                        adapterItemList.add(AdapterItem.ProfileItem(it))
+                    }
+                    adapterItemList.add(AdapterItem.LoadingItem)
                     Log.d("MainActivity", "API Call Success: Received ${profiles.size} profiles.")
                     profileAdapter.submitList(adapterItemList)
 
                 } else {
+                    binding.tvNothingHere.visibility = View.VISIBLE
                     Log.d("MainActivity", "API Call Success: Received an empty list.")
                 }
             }
@@ -145,6 +159,14 @@ class ProfileListFragment: Fragment(), ItemClickListener {
 
         userViewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             Log.e("MainActivity", "API Call Error: $errorMessage")
+        }
+
+        userViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.loading.visibility = View.VISIBLE
+            } else {
+                binding.loading.visibility = View.GONE
+            }
         }
     }
 

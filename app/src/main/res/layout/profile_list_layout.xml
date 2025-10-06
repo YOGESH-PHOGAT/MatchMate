@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clRoot"
-    android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTitle"
@@ -54,5 +54,27 @@
         app:layout_constraintBottom_toBottomOf="@id/tvTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvTitle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvNothingHere"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:text="@string/nothing_here"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rvProfiles"
+        app:layout_constraintTop_toTopOf="@id/rvProfiles" />
+
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:padding="180dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rvProfiles"
+        app:layout_constraintTop_toTopOf="@id/rvProfiles" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
