@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.matchmate.data.UserProfile
 
 /**
  * The Room database for this app.
@@ -15,11 +14,13 @@ import com.example.matchmate.data.UserProfile
  */
 // 1. Define the entities (tables) and the database version.
 //    Every time you change the schema (e.g., add a column), you must increment the version.
-@Database(entities = [UserProfile::class], version = 1, exportSchema = false)
+@Database(entities = [CardProfile::class, HistoryProfile::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Declare an abstract function for each DAO. Room will generate the implementation.
     abstract fun profileDao(): ProfileDao
+    abstract fun historyProfileDao(): HistoryProfileDao
+
 
     // 3. Use a companion object to create a singleton instance of the database.
     //    This prevents having multiple instances of the database open at the same time.
@@ -42,8 +43,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "matchmate_database" // The name of your database file.
                 )
-                    // In a real app, you would add a migration strategy here for schema changes.
-                    // .fallbackToDestructiveMigration() // Wipes and rebuilds the database on version change. Good for development.
                     .build()
                 INSTANCE = instance
                 // Return the newly created instance.

@@ -1,7 +1,7 @@
 package com.example.matchmate.db
 
 import android.util.Log
-import com.example.matchmate.data.UserProfile
+import androidx.room.withTransaction
 import com.example.matchmate.data.toEntity
 import com.example.matchmate.network.ApiService
 
@@ -15,8 +15,12 @@ import com.example.matchmate.network.ApiService
  */
 class ProfileRepository(
     private val apiService: ApiService,
-    private val profileDao: ProfileDao
+    private val db: AppDatabase
 ) {
+
+
+    private val profileDao = db.profileDao()
+    private val historyProfileDao = db.historyProfileDao()
 
     /**
      * Fetches a new batch of profiles from the network, filters out any duplicates
@@ -75,6 +79,11 @@ class ProfileRepository(
         return profileDao.getAllProfiles()
     }
 
+    suspend fun getHistoryProfiles(): List<UserProfile> {
+        Log.d("ProfileRepository", "Retrieving all history profiles from local cache.")
+        return historyProfileDao.getAllProfiles()
+    }
+
     /**
      * Clears the entire 'user_profiles' table.
      * This is useful for implementing a "pull-to-refresh" feature where you want to
@@ -83,5 +92,27 @@ class ProfileRepository(
     suspend fun clearAllProfiles() {
         Log.d("ProfileRepository", "Clearing all profiles from the database.")
         profileDao.deleteAll()
+    }
+
+    suspend fun moveProfileToHistory(userProfile: UserProfile) {
+        val historyProfile = HistoryProfile(
+            uid = userProfile.uid,
+            gender = userProfile.gender,
+            firstName = userProfile.firstName,
+            lastName = userProfile.lastName,
+            city = userProfile.city,
+            state = userProfile.state,
+            phone = userProfile.phone,
+            cell = userProfile.cell,
+            pictureLarge = userProfile.pictureLarge,
+            pictureMedium = userProfile.pictureMedium,
+            pictureThumbnail = userProfile.pictureThumbnail,
+            interactionStatus = userProfile.interactionStatus
+        )
+
+        db.withTransaction {
+            historyProfileDao.insert(historyProfile)
+            profileDao.deleteByUid(userProfile.uid)
+        }
     }
 }

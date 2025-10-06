@@ -5,14 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.matchmate.db.CardProfile
 import com.example.matchmate.db.ProfileRepository
-import com.example.matchmate.data.UserProfile
+import com.example.matchmate.db.UserProfile
 import kotlinx.coroutines.launch
 
 class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
 
     private val _profiles = MutableLiveData<List<UserProfile>>()
     val profiles: LiveData<List<UserProfile>> = _profiles
+
+    private val _historyProfiles = MutableLiveData<List<UserProfile>>()
+    val historyProfiles: LiveData<List<UserProfile>> = _historyProfiles
+
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
@@ -58,6 +63,27 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
         }
     }
 
+    fun fetchProfilesFromHistory() {
+
+        viewModelScope.launch {
+            isFetching = true
+            _isLoading.value = true
+            try {
+                _historyProfiles.value = repository.getHistoryProfiles()
+            } catch (e: Exception) {
+                _error.value = "Failed to load history: ${e.message}"
+            } finally {
+                isFetching = false
+                _isLoading.value = false
+            }
+        }
+
+    }
+
+    fun loadMoreProfilesFromHistory() {
+        // similar pagination as profile.
+    }
+
     fun onForcedRefresh() {
         if (isFetching) return
 
@@ -95,6 +121,30 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
                 _error.value = "Failed to fetch profiles: ${e.message}"
             }
         }
+    }
+
+    fun onProfileClicked(profile: UserProfile) {
+        if (profile !is CardProfile) return
+
+        viewModelScope.launch {
+            try {
+                repository.moveProfileToHistory(profile)
+                val currentList = _profiles.value?.toMutableList() ?: mutableListOf()
+                currentList.remove(profile)
+                _profiles.value = currentList
+
+            } catch (e: Exception) {
+                _error.value = "Failed to move profile to history: ${e.message}"
+            }
+        }
+
+        /**
+         * The repo changes of history would also be synced with backend.
+         * I would try batching the responses to ensure routine updates and avoid constant api calls.
+         * To ensure data preservation, the app would also perform a sweeping api call to upload all responses just before exit.
+         * In routine cases, data losses should be minimal, but without graceful exits there would be lost responses.
+         *
+         */
     }
 }
 

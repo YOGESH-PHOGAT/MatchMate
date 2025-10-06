@@ -1,35 +1,66 @@
 package com.example.matchmate
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.matchmate.data.UserProfile
+import com.example.matchmate.data.InteractionStatus
 import com.example.matchmate.databinding.LayoutLoadingItemBinding
 import com.example.matchmate.databinding.LayoutProfileCardBinding
+import com.example.matchmate.db.UserProfile
 
 private const val ITEM_VIEW_TYPE_PROFILE = 0
 private const val ITEM_VIEW_TYPE_LOADING = 1
 
-class ProfileAdapter : ListAdapter<AdapterItem, RecyclerView.ViewHolder>(ProfileDiffCallback()) {
+class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem, RecyclerView.ViewHolder>(ProfileDiffCallback()) {
+
 
     inner class ProfileViewHolder(val binding: LayoutProfileCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        // 3. This function binds a UserProfile object to the views.
         fun bind(profile: UserProfile) {
             binding.apply {
-                // Set the name and address
+
+
+                when (profile.interactionStatus) {
+                    InteractionStatus.ACCEPTED -> {
+                        btnAccept.visibility = View.INVISIBLE
+                        btnReject.visibility = View.INVISIBLE
+                        cardRoot.background = AppCompatResources.getDrawable(itemView.context, R.color.green_select)
+                    }
+                    InteractionStatus.DECLINED -> {
+                        btnAccept.visibility = View.INVISIBLE
+                        btnReject.visibility = View.INVISIBLE
+                        cardRoot.background = AppCompatResources.getDrawable(itemView.context, R.color.red_reject)
+                    }
+                    InteractionStatus.UNSEEN -> {
+                        btnAccept.visibility = View.VISIBLE
+                        btnReject.visibility = View.VISIBLE
+                        cardRoot.background = AppCompatResources.getDrawable(itemView.context, R.color.white)
+                    }
+                }
+
                 tvName.text = "${profile.firstName} ${profile.lastName}"
                 tvAddress.text = "${profile.city}, ${profile.state}"
 
-                // Use Glide to load the image from the URL into the ImageView
                 Glide.with(itemView.context)
                     .load(profile.pictureLarge)
                     .circleCrop() // Optional: Makes the image circular
                     .placeholder(R.drawable.ic_launcher_background) // Optional: A placeholder while loading
                     .into(ivProfile)
+
+                btnAccept.setOnClickListener {
+                    profile.interactionStatus = InteractionStatus.ACCEPTED
+                    listener.onProfileClicked(profile)
+                }
+
+                btnReject.setOnClickListener {
+                    profile.interactionStatus = InteractionStatus.DECLINED
+                    listener.onProfileClicked(profile)
+                }
             }
         }
     }
@@ -99,4 +130,8 @@ class ProfileAdapter : ListAdapter<AdapterItem, RecyclerView.ViewHolder>(Profile
 sealed class AdapterItem {
     data class ProfileItem(val userProfile: UserProfile) : AdapterItem()
     object LoadingItem : AdapterItem()
+}
+
+interface ItemClickListener {
+    fun onProfileClicked(profile: UserProfile)
 }

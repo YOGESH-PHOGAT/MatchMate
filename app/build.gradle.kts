@@ -80,4 +80,6 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     // In your dependencies block
     implementation(libs.glide)
+    implementation(libs.androidx.fragment.ktx) // Use the latest stable version
+
 }

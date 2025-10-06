@@ -3,7 +3,7 @@ package com.example.matchmate.data
 import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import androidx.room.*
+import com.example.matchmate.db.CardProfile
 
 
 @SuppressLint("UnsafeOptInUsageError")
@@ -42,29 +42,6 @@ data class UserProfileResponse(
 )
 
 
-@Entity(tableName = "user_profiles")
-data class UserProfile(
-    @PrimaryKey
-    val uid: String, // e.g., the email or a unique ID from the API
-    val gender: String,
-    val firstName: String,
-    val lastName: String,
-    val city: String,
-    val state: String,
-    val phone: String,
-    val cell: String,
-    val pictureLarge: String,
-    val pictureMedium: String,
-    val pictureThumbnail: String,
-    var interactionStatus: InteractionStatus = InteractionStatus.UNSEEN
-)
-
-
-@Entity(tableName = "seen_profiles")
-data class SeenProfile(
-    @PrimaryKey
-    val uid: String // Stores only the unique ID of a fetched profile
-)
 
 @Serializable
 data class Name(
@@ -111,9 +88,9 @@ enum class InteractionStatus {
     UNSEEN
 }
 
-fun UserProfileResponse.toEntity(): UserProfile {
+fun UserProfileResponse.toEntity(): CardProfile {
     val uniqueId = this.id.value?.takeIf { it.isNotBlank() } ?: this.email
-    return UserProfile(
+    return CardProfile(
         uid = uniqueId,
         gender = this.gender,
         firstName = this.name.first,
