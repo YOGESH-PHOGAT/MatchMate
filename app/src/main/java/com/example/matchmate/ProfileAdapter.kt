@@ -45,7 +45,7 @@ class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem,
                 tvAddress.text = "${profile.city}, ${profile.state}"
 
                 Glide.with(itemView.context)
-                    .load(profile.pictureThumbnail)
+                    .load(profile.pictureLarge)
                     .circleCrop()
                     .into(ivProfile)
 

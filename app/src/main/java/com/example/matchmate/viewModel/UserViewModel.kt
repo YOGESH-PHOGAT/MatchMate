@@ -108,9 +108,11 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
     }
 
 
-    fun fetchUsers() {
+    fun fetchUsers(showLoading: Boolean = true) {
         viewModelScope.launch {
-            _isLoading.value = true
+            if (showLoading) {
+                _isLoading.value = true
+            }
             try {
                 val profileList = repository.getAllCachedProfiles()
                 _profiles.value = profileList
@@ -118,7 +120,9 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
                 // The repository logs errors, but we can still post a generic one to the UI
                 _error.value = "Failed to fetch profiles: ${e.message}"
             } finally {
-                _isLoading.value = false
+                if (showLoading) {
+                    _isLoading.value = false
+                }
             }
         }
     }
@@ -129,9 +133,7 @@ class UserViewModel(private val repository: ProfileRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 repository.moveProfileToHistory(profile)
-                val currentList = _profiles.value?.toMutableList() ?: mutableListOf()
-                currentList.remove(profile)
-                _profiles.value = currentList
+                fetchUsers(false)
 
             } catch (e: Exception) {
                 _error.value = "Failed to move profile to history: ${e.message}"
