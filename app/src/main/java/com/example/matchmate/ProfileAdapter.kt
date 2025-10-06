@@ -23,8 +23,6 @@ class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem,
 
         fun bind(profile: UserProfile) {
             binding.apply {
-
-
                 when (profile.interactionStatus) {
                     InteractionStatus.ACCEPTED -> {
                         btnAccept.visibility = View.INVISIBLE
@@ -48,8 +46,7 @@ class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem,
 
                 Glide.with(itemView.context)
                     .load(profile.pictureThumbnail)
-                    .circleCrop() // Optional: Makes the image circular
-                    .placeholder(R.drawable.ic_launcher_background) // Optional: A placeholder while loading
+                    .circleCrop()
                     .into(ivProfile)
 
                 btnAccept.setOnClickListener {
@@ -66,7 +63,6 @@ class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem,
     }
 
     inner class LoadingViewHolder(binding: LayoutLoadingItemBinding) : RecyclerView.ViewHolder(binding.root)
-    // Nothing to bind, it's just a spinner
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -112,7 +108,6 @@ class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem,
         }
     }
 
-    // 4. DiffUtil calculates the difference between two lists and enables smooth animations.
     class ProfileDiffCallback : DiffUtil.ItemCallback<AdapterItem>() {
         override fun areItemsTheSame(oldItem: AdapterItem, newItem: AdapterItem): Boolean {
             return (oldItem is AdapterItem.ProfileItem && newItem is AdapterItem.ProfileItem && oldItem.userProfile.uid == newItem.userProfile.uid) ||
@@ -120,7 +115,6 @@ class ProfileAdapter(val listener: ItemClickListener) : ListAdapter<AdapterItem,
         }
 
         override fun areContentsTheSame(oldItem: AdapterItem, newItem: AdapterItem): Boolean {
-            // Check if the data content has changed. LoadingItem has no content to compare.
             return oldItem == newItem
         }
     }

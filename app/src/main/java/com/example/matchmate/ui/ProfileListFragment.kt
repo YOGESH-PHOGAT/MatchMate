@@ -130,7 +130,6 @@ class ProfileListFragment: Fragment(), ItemClickListener {
                     profiles.forEach {
                         adapterItemList.add(AdapterItem.ProfileItem(it))
                     }
-                    adapterItemList.add(AdapterItem.LoadingItem)
                     profileAdapter.submitList(adapterItemList)
                     Log.d("MainActivity", "API Call Success: Received ${profiles.size} history profiles.")
                 } else {
